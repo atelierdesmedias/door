@@ -1,4 +1,4 @@
-# Byte-compiled / optimized / DLL files
+tests/1;4205;0ctests/# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -58,5 +58,11 @@ docs/_build/
 # PyBuilder
 target/
 
-#Ipython Notebook
+# Ipython Notebook
 .ipynb_checkpoints
+
+# Emacs
+*~
+
+# Door project stuff
+tests
