@@ -1,0 +1,3 @@
+import door
+
+door.open()
