@@ -8,7 +8,7 @@ cd /usr/local/door
 python3 init.py
 python3 door_button_controller.py &
 python3 card_controler.py &
-python3 monitoring.py &
+python3 monitoring.py &> /tmp/monitoring.log &
 
 sleep 3
 

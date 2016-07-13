@@ -25,7 +25,7 @@ case "$1" in
 	;;
 
     *)
-	echo "Usage: /etc/init.d/door {start|stop}"
+	echo "Usage: /etc/init.d/door {start|stop|restart}"
 	exit 1
 	;;
 esac

@@ -1,51 +1,62 @@
 # -*- coding: utf-8 -*-
-import http.client
+from urllib.parse import urlencode
+from urllib.request import urlopen
 import time
 
 #
-# Monitoring. Simply POST to http://atelier-medias.org/porte-status.php every minute. See that URL for status.
+# Monitoring and card number sync
+#
+# Simply POST to http://atelier-medias.org/porte-status.php every minute. See that URL for status.
+# Also sync the card numbers from the internet.
 #
 
-def ping():
-    http.client.HTTPConnection("atelier-medias.org", timeout=20).request("POST", "/porte-status.php")
+def ping(status):
+    try:
+        data = urlencode({'status': status if status else b''}).encode()
+        urlopen('http://atelier-medias.org/porte-status.php', data=data, timeout=10)
+    except Exception as e:
+        print("Error in ping: %r" % e)
+
+def sync():
+    # sync the card numbers. See the www/index.php file in the same git repo as this file.
+    try:
+        output = urlopen('http://localhost/', data=urlencode({'sync': '1'}).encode(), timeout=10).read().decode()
+    except Exception as e:
+        return ("Error in sync: %r" % e)
+    return None if ('<b>OK</b>' in output) else "Sync failed: 'OK' not found in output of POST to http://localhost/ (aka http://porte/)"
+
+ping('Started')
 
 
 while (True):
-    ping()
+    sync_status = sync()
+    ping(sync_status)
     time.sleep(60)
 
 
 '''
 
-pour reference, le script qui est sur http://atelier-medias.org/porte-status.php :
+le script qui est sur http://atelier-medias.org/porte-status.php est:
 
 <?php
 
-/* 
-Monitoring de la porte - 
+/*
+Monitoring de la porte - Une petit page PHP avec le fonctionnement suivant :
 
-Design:
-
-Une petit page PHP avec le fonctionnement suivant :
-
-- on met un thread ou service Python dans le serveur d'ouvreur de porte qui fait un POST sur cette page PHP toutes les ~2 minutes. ce POST sauve un fichier-marqueur
+- le serveur d'ouvreur de porte qui fait un POST sur cette page PHP toutes les minutes. Optionnellement il peut passer un champs "status" qui est logge
 - Lorsqu'on fait un GET sur cette page PHP, elle montre "OK" en vert si (et seulement si) le fichier-marqueur est a été modifié il y  moins de 5 minutes
-- un service de monitoring HTTP/HTML tierce (y'en a plein de gratuits) vérifie que la page continue toujours "OK" en vert et nous envoie un email/SMS/whatever si ce n'est pas le cas
-
-De cette manière, on vérifie "end-to-end" que:
-  * le serveur d'ouvreur de porte est "up and running" - dès qu'il a un prb, le monitoring va nous alerter
-  * l'internet marche depuis le bureau
-  * le monitoring fonctionne (le script ici-présent est bien hébergé sur un serveur qui marche)
-
-Le seul point de défaillance est le service de monitoring tierce. Mais c'est leur métier, non ? et on pourrait d'ailleurs facilement en avoir plusieurs, puisque c'est juste un GET sur une page web.
-
-Un inconvénient, est de ne pas pouvoir différencier à distance entre une panne d'internet, et une panne du serveur de porte. Mais par définition, nous ne pouvons plus rien monitorer si l'internet ne marche pas, à moins d'utiliser des moyens alternatifs, tels que fusées de détresse, pigeon voyageurs, drone immobile au-dessus du Rhône... Et rien ne nous empêche d'avoir un autre systeme (similaire à celui-ci ?) pour monitorer la connection internet. Mais c'est un autre sujet : je ne sais pas si c'est un problème que nous avons.
-
+- un compte de monitoring sur http://www.gotsitemonitor.com (login: adm-informatique+porte@googlegroups.com password: adm ) verifie toutes les 10 minutes,
+ et envoie un email a adm-informatique+porte@googlegroups.com si probleme.
 */
 
 $marker = '/tmp/mark.txt';
+$log = '/tmp/porte-status.txt';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
    file_put_contents($marker, "placeholder file for http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
+   if(!empty($_POST['status'])) {
+      file_put_contents($log, date(DATE_RFC2822).": ".$_POST['status']."\n", FILE_APPEND);
+   }
    exit("OK\n");
 }
 
@@ -56,7 +67,7 @@ echo "<h1>Monitoring de la porte de l'AdM</h1>";
 echo "<p>Current status:</p>";
 echo "<p>";
 
-$time = 5 * 60 ; //in seconds 
+$time = 5 * 60 ; //in seconds
 
 if ( file_exists($marker) && ( (time() - filemtime($marker)) < $time ) )
 {
@@ -64,15 +75,15 @@ if ( file_exists($marker) && ( (time() - filemtime($marker)) < $time ) )
 }
 else
 {
-   echo '<p><font color="red">NOT ';
-   echo 'OK</font></p>';   
-}  
+   echo '<p><font color="red">FAILED</font></p>';
+}
 
 echo "<p>Last ping from the door: ".gmdate("H:i:s", (time() - filemtime($marker)))." ago.</p>";
-echo "<br/><br/><br/><br/>------<br/>(This file contains:<pre>";
-echo htmlspecialchars(file_get_contents(basename(__FILE__)));
-echo "</pre>";
-echo ")";
+
+echo "<p>Status history: <pre>";
+echo file_get_contents($log);
+echo "</pre></p>";
+
 echo "</body><html>";
 
 ?>
