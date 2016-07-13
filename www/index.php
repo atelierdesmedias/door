@@ -31,8 +31,8 @@ function history($action)
 }
 
 function debug() {
-	  // set to 1 to avoid changing the DB
-	 return 1;
+	  // set it to 1 to avoid changing the DB
+	 return 0;
 }
 
 function get_cards() {

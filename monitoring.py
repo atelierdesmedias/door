@@ -7,7 +7,7 @@ import time
 # Monitoring and card number sync
 #
 # Simply POST to http://atelier-medias.org/porte-status.php every minute. See that URL for status.
-# Also sync the card numbers from the internet.
+# Also sync the card numbers from the intranet
 #
 
 def ping(status):
@@ -45,8 +45,8 @@ Monitoring de la porte - Une petit page PHP avec le fonctionnement suivant :
 
 - le serveur d'ouvreur de porte qui fait un POST sur cette page PHP toutes les minutes. Optionnellement il peut passer un champs "status" qui est logge
 - Lorsqu'on fait un GET sur cette page PHP, elle montre "OK" en vert si (et seulement si) le fichier-marqueur est a été modifié il y  moins de 5 minutes
-- un compte de monitoring sur http://www.gotsitemonitor.com (login: adm-informatique+porte@googlegroups.com password: adm ) verifie toutes les 10 minutes,
- et envoie un email a adm-informatique+porte@googlegroups.com si probleme.
+- un compte de monitoring sur http://www.gotsitemonitor.com (login: adm-informatique+porte@googlegroups.com password: adm ) verifie la presence de 'OK'
+  toutes les 10 minutes, et envoie un email a adm-informatique+porte@googlegroups.com si '>OK<' n'est pas present sur la page
 */
 
 $marker = '/tmp/mark.txt';
@@ -55,6 +55,7 @@ $log = '/tmp/porte-status.txt';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
    file_put_contents($marker, "placeholder file for http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
    if(!empty($_POST['status'])) {
+      if (filesize($log) > (100*1000*1000)) { unlink($log); } // avoid filling tmp folder - limit to 100MBytes
       file_put_contents($log, date(DATE_RFC2822).": ".$_POST['status']."\n", FILE_APPEND);
    }
    exit("OK\n");
@@ -65,20 +66,17 @@ echo '<head><meta charset="UTF-8"></head><body>';
 
 echo "<h1>Monitoring de la porte de l'AdM</h1>";
 echo "<p>Current status:</p>";
-echo "<p>";
 
-$time = 5 * 60 ; //in seconds
-
-if ( file_exists($marker) && ( (time() - filemtime($marker)) < $time ) )
+$time = time() - filemtime($marker);
+if ( file_exists($marker) && ($time < (5 * 60)) ) // 5 minutes
 {
    echo '<p><font color="green">OK</font></p>';
 }
 else
 {
-   echo '<p><font color="red">FAILED</font></p>';
+   echo '<p><font color="red">NOT OK</font></p>';
 }
-
-echo "<p>Last ping from the door: ".gmdate("H:i:s", (time() - filemtime($marker)))." ago.</p>";
+echo "<p>Last ping from the door: ".gmdate("H:i:s", $time)." ago.</p>";
 
 echo "<p>Status history: <pre>";
 echo file_get_contents($log);
@@ -87,4 +85,5 @@ echo "</pre></p>";
 echo "</body><html>";
 
 ?>
+
 '''
