@@ -129,10 +129,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST')
 }
 elseif (!empty($_GET['missing']))
 {
-	echo "<br/>Liste des coworkers nomades ou fixes dont la carte n'est pas  d&eacute;finie correctement sur l'intranet (absent sur la porte, ou incorrecte)<br/>";
+	echo "<br/>Liste des coworkers nomades ou fixes dont la carte n'est pas  d&eacute;finie correctement sur l'intranet (manquant, ou invalid: pas 10 chiffres ou ne commencant pas par 3 zeros)<br/>";
 	process_cards(function ($cards, $coworker) {
-		if (! ($coworker["card"] && in_array($coworker["card"], $cards)) && (($coworker["formule"] === "nomade") || ($coworker["formule"] === "fixe") )) {
-		     echo "<br/>".$coworker["email"]." - ".$coworker["first_name"]." ".$coworker["last_name"]." - ".$coworker["formule"]." (".($coworker["card"] ? "absent de la porte: ".$coworker["card"] : "non d&eacute;fini sur l'intranet").")";
+		if ((($coworker["formule"] === "nomade") || ($coworker["formule"] === "fixe")) &&
+		   (( !($coworker["card"] && in_array($coworker["card"], $cards))) ||
+		    (strlen($coworker["card"]) != 10) ||
+		    (substr($coworker["card"], 0, 3 ) !== "000"))) {
+		     echo "<br/>".$coworker["email"]." - ".$coworker["first_name"]." ".$coworker["last_name"]." - ".$coworker["formule"]." (".($coworker["card"] ? "code invalid  : ".$coworker["card"] : "non d&eacute;fini sur l'intranet").")";
 		}
 	}, function ($card) { });
 }
