@@ -2,20 +2,27 @@
 from urllib.parse import urlencode
 from urllib.request import urlopen
 import time
+import os
 
 #
 # Monitoring and card number sync
 #
 # Simply POST to http://atelier-medias.org/porte-status.php every minute. See that URL for status.
-# Also sync the card numbers from the intranet
+# Also sync the card numbers from the intranet by POSTING to http://localhost/ (see www.index.php)
 #
 
+def _log(info):
+    LOGFILE='/tmp/monitoring.log'
+    if os.path.exists(LOGFILE) and (os.path.getsize(LOGFILE) > (100 * 1000 * 1000)):
+        os.remove(LOGFILE)
+    with open(LOGFILE, 'a') as file: file.write(info + "\n")
+    
 def ping(status):
     try:
         data = urlencode({'status': status if status else b''}).encode()
         urlopen('http://atelier-medias.org/porte-status.php', data=data, timeout=10)
     except Exception as e:
-        print("Error in ping: %r" % e)
+        _log("Error in ping: %r" % e)
 
 def sync():
     # sync the card numbers. See the www/index.php file in the same git repo as this file.
