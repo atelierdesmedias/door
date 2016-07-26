@@ -129,7 +129,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST')
 }
 elseif (!empty($_GET['missing']))
 {
-	echo "<br/>Liste des coworkers nomades ou fixes dont la carte n'est pas  d&eacute;finie correctement sur l'intranet (manquant, ou invalid: pas 10 chiffres ou ne commencant pas par 3 zeros)<br/>";
+	echo "<br/>Liste des coworkers nomades ou fixes dont la carte n'est pas  d&eacute;finie correctement sur l'intranet (carte manquante ou invalide: pas 10 chiffres ou ne commencant pas par 3 zeros)<br/>";
 	process_cards(function ($cards, $coworker) {
 		if ((($coworker["formule"] === "nomade") || ($coworker["formule"] === "fixe")) &&
 		   (( !($coworker["card"] && in_array($coworker["card"], $cards))) ||
@@ -143,20 +143,51 @@ elseif (!empty($_GET['list']))
 {      
 	echo "<br/><br/>Liste des cartes qui seront ajout&eacute;es (coworkers nomades ou fixes, dont la carte est d&eacute;finie dans l'intranet mais pas pr&eacute;sent dans la porte):";
 	echo "<br/>";
-	process_cards(function ($cards, $coworker) {
+	$found = FALSE;
+	process_cards(function ($cards, $coworker) use (&$found) {
 		if ($coworker["card"] && (! in_array($coworker["card"], $cards)) && (($coworker["formule"] === "nomade") || ($coworker["formule"] === "fixe") )) {
 		   echo "<br/>".$coworker["card"]. " (".$coworker["email"]." - ".$coworker["first_name"]." ".$coworker["last_name"]." - ".$coworker["formule"].")";
+		   $found = TRUE;
 		}
 	}, function ($card) use (&$missing) { $missing .= "<br/>".$card."\n";});
 
+	if (!$found) {
+	   echo "(pas de carte &agrave; ajouter)";
+	}
 	echo "<br/><br/>Liste des cartes qui seront enlev&eacute;es de la porte:";
 	echo "<br/>";
  	echo $missing;
+	if (!$missing) {
+	   echo "(pas de carte &agrave; enlever)";
+	   }
+}
+elseif (!empty($_GET['cartes']))
+{
+	foreach(get_cards() as $card) {
+?>
+			<div class="line-card">
+				<label for="cbox2">card id : <?php echo $card ?></label>
+			</div>
+<?php
+		}
+}
+elseif (!empty($_GET['coworkers']))
+{      
+	process_cards(function ($cards, $coworker) {
+		if ($coworker["card"] && ($coworker["formule"] === "nomade") || ($coworker["formule"] === "fixe") ) {
+		   echo "<br/>".$coworker["card"]. " (".$coworker["email"]." - ".$coworker["first_name"]." ".$coworker["last_name"]." - ".$coworker["formule"].")";
+		}
+	}, function ($card) { });
 }
 else
 {
 ?>
 
+<h1>Page du monitoring</h1>
+
+<a href="http://atelier-medias.org/porte-status.php">http://atelier-medias.org/porte-status.php</a>.
+<br/>
+<br/>
 
 <h1>Sync des cartes depuis l'intranet</h1>
 
@@ -176,19 +207,15 @@ else
 
 <a href="?missing=1">ici</a>.
 
-<h1>Liste des cartes</h1>
+<h1>Liste des cartes sur la porte</h1>
 
-    <p>
-<?php
-	foreach(get_cards() as $card) {
-?>
-			<div class="line-card">
-				<label for="cbox2">card id : <?php echo $card ?></label>
-			</div>
-<?php
-		}
-?>
-	</p>
+<a href="?cartes=1">ici</a>.
+
+<h1>Liste des coworkers avec cartes</h1>
+
+<a href="?coworkers=1">ici</a>.
+
+
 <?php
 }
 ?>

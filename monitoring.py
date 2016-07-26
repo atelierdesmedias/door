@@ -48,12 +48,9 @@ le script qui est sur http://atelier-medias.org/porte-status.php est:
 <?php
 
 /*
-Monitoring de la porte - Une petit page PHP avec le fonctionnement suivant :
+Monitoring de la porte.
 
-- le serveur d'ouvreur de porte qui fait un POST sur cette page PHP toutes les minutes. Optionnellement il peut passer un champs "status" qui est logge
-- Lorsqu'on fait un GET sur cette page PHP, elle montre "OK" en vert si (et seulement si) le fichier-marqueur est a été modifié il y  moins de 5 minutes
-- un compte de monitoring sur http://www.gotsitemonitor.com (login: adm-informatique+porte@googlegroups.com password: adm ) verifie la presence de 'OK'
-  toutes les 10 minutes, et envoie un email a adm-informatique+porte@googlegroups.com si '>OK<' n'est pas present sur la page
+Le serveur d'ouvreur de porte fait un POST sur cette page PHP toutes les minutes
 */
 
 $marker = '/tmp/mark.txt';
@@ -76,21 +73,27 @@ echo "<p>Current status:</p>";
 
 $time = time() - filemtime($marker);
 if ( file_exists($marker) && ($time < (5 * 60)) ) // 5 minutes
-{
+{  
    echo '<p><font color="green">OK</font></p>';
 }
 else
-{
+{  
+   // Ne pas modifier ce texte ! le monitoring l'utilise
    echo '<p><font color="red">NOT OK</font></p>';
 }
 echo "<p>Last ping from the door: ".gmdate("H:i:s", $time)." ago.</p>";
 
-echo "<p>Status history: <pre>";
+echo "<h1>Liens utiles</h1>";
+echo "<p><a href=\"http://192.168.1.8\">Site de la porte</a> (seulement accessible depuis le reseau interne de l'AdM)</p>";
+echo "<p><a href=\"http://www.gotsitemonitor.com\">Monitoring de cette page</a> (login: adm-informatique+porte@googlegroups.com password: adm ) verifie que cette page ne contient pas <i>NOT-espac\
+e-OK</i></p>";
+echo "<h1>Historique</h1><pre>";
 echo file_get_contents($log);
 echo "</pre></p>";
 
 echo "</body><html>";
 
 ?>
+
 
 '''
