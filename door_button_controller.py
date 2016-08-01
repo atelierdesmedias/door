@@ -4,7 +4,7 @@ import pifacedigitalio
 import threading 
 
 #
-# Switch to open/close the door (in french "bouton"... thus "button")
+# Switch to open/close the door
 #
 pfd = pifacedigitalio.PiFaceDigital()
 
@@ -14,7 +14,7 @@ def threadLoop():
 
 def press(event):
     if not door.is_opened(pfd):
-        door.open()
+        door.open("Button")
         threading.Thread(target=threadLoop).start()
 
 listener = pifacedigitalio.InputEventListener()

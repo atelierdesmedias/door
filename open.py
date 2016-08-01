@@ -1,3 +1,3 @@
 import door
 
-door.open()
+door.open("Startup")

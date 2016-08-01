@@ -17,7 +17,7 @@ for event in device.read_loop():
             code = int(keyevent.scancode)
             if code == 28:
                 if database.containsCard(cardcode):
-                   door.open()
+                   door.open(cardcode)
                    time.sleep(3)
                    door.close()
                 cardcode = ''
