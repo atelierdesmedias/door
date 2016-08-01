@@ -183,37 +183,38 @@ else
 {
 ?>
 
-<h1>Page du monitoring</h1>
+<h1>Porte de l'Adm</h1>
 
-<a href="http://atelier-medias.org/porte-status.php">http://atelier-medias.org/porte-status.php</a>.
-<br/>
-<br/>
+<h2>Pour ajouter votre carte (ou badge)</h2>
+<ul>
+<li>Trouvez le numéro sur la carte (ou badge) magnétique d'accès : c'est un nombre à 10 chiffres, commençant par 3 ou 4 zéros. Sur les cartes, c'est la partie gauche (les 10 premiers chiffres) du numéro.</li>
+<li>Allez sur <a href="https://intra.atelier-medias.org/xwiki/bin/view/XWiki/CurrentUser">votre profil sur l'intranet</a></li>
+<li>Authentifiez-vous si nécessaire</li>
+<li>Editez votre profil (icône 'crayon' en haut à droite de la section centrale "Présentation")</li>
+<li>Ajoutez le numéro de carte (10 chiffres) dans le champs "CODE CARTE" vers la fin</li>
+<li>Enregistrez</li>
+<li>Attendez une minute, ou, si vous etes tr&egrave;s press&eacute;, appuyer sur <form action="" method="post"><input type="submit" name="sync" value="Sync immediatement !"></form>
+</li>
+<li>(Important !) V&eacute;rifiez que votre badge ou carte permet bien d'entrer: allez &agrave; la porte de l'AdM, sortez, essayez votre badge...</li>
+</ul>
+<h1>Infos et liens utiles</h1>
 
-<h1>Sync des cartes depuis l'intranet</h1>
+<p><a href="http://atelier-medias.org/porte-status.php">Status (sur le site public)</a></p>
 
-<a href="?list=1">Voir la liste des cartes &agrave; syncer...</a>
-<br/>
-<br/>
+<p>
+<a href="?list=1">Liste des cartes &agrave; syncer</a>
 <form action="" method="post">
     <input type="submit" name="sync" value="Sync immediatement !">
 </form>
+</p>
 
+<p><a href="history.txt">Historique des changements</a></p>
 
-<h1>Historique des changements</h1>
+<p><a href="?missing=1">Coworkers sans carte</a></p>
 
-<a href="history.txt">ici</a>.
+<p><a href="?cartes=1">Liste des cartes sur la porte</a></p>
 
-<h1>Coworkers sans carte</h1>
-
-<a href="?missing=1">ici</a>.
-
-<h1>Liste des cartes sur la porte</h1>
-
-<a href="?cartes=1">ici</a>.
-
-<h1>Liste des coworkers avec cartes</h1>
-
-<a href="?coworkers=1">ici</a>.
+<p><a href="?coworkers=1">Liste des coworkers avec cartes</a></p>
 
 
 <?php
