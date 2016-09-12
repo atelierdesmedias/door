@@ -52,19 +52,22 @@ function add_card($card)
 	if (debug()) {
 	    return;
 	}
-	history("ADDED $card");
 	
 	$card = mysqli_real_escape_string(db(), $card);
 
 	$check_if_exist = db()->query("SELECT * FROM card WHERE code = '$card'"); 
 	        
 	if(mysqli_num_rows($check_if_exist) > 0){
+		history("CARD ALLREADY PRESENT $card");
 		echo "Carte dejà présente";
 	}else{
 		$sql_insert = "INSERT INTO card (code) VALUES ('$card')";
 		$result = db()->query($sql_insert);
 		if(!$result){
 			echo "ERREUR: requette. " . mysqli_error(db())."<br/>";
+ 			history("ERROR ADDING $card");
+		} else {
+		  history("ADDED $card");
 		}
 	}
 }
