@@ -120,7 +120,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST')
 	if(!empty($_POST['sync']))
 	{
 		process_cards(function ($cards, $coworker) {
-				if ($coworker["card"] && (! in_array($coworker["card"], $cards)) && (($coworker["formule"] === "nomade") || ($coworker["formule"] === "fixe") )) {
+				if ($coworker["card"] && (! in_array($coworker["card"], $cards)) && (($coworker["formule"] === "nomade") || ($coworker["formule"] === "fixe") || ($coworker["membre_honneur"] == 1) )) {
 			           add_card($coworker["card"]);
 				}
 			}, function ($card) {
