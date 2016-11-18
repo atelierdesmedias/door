@@ -188,18 +188,8 @@ else
 
 <h1>Porte de l'Adm</h1>
 
-<h2>Pour ajouter votre carte (ou badge)</h2>
-<ul>
-<li>Trouvez le numéro sur la carte (ou badge) magnétique d'accès : c'est un nombre à 10 chiffres, commençant par 3 ou 4 zéros. Sur les cartes, c'est la partie gauche (les 10 premiers chiffres) du numéro.</li>
-<li>Allez sur <a href="https://intra.atelier-medias.org/xwiki/bin/view/XWiki/CurrentUser">votre profil sur l'intranet</a></li>
-<li>Authentifiez-vous si nécessaire</li>
-<li>Editez votre profil (icône 'crayon' en haut à droite de la section centrale "Présentation")</li>
-<li>Ajoutez le numéro de carte (10 chiffres) dans le champs "CODE CARTE" vers la fin</li>
-<li>Enregistrez</li>
-<li>Attendez une minute, ou, si vous etes tr&egrave;s press&eacute;, appuyer sur <form action="" method="post"><input type="submit" name="sync" value="Sync immediatement !"></form>
-</li>
-<li>(Important !) V&eacute;rifiez que votre badge ou carte permet bien d'entrer: allez &agrave; la porte de l'AdM, sortez, essayez votre badge...</li>
-</ul>
+Pour activer votre carte (ou badge), voir les instructions sur <a href="https://intra.atelier-medias.org/xwiki/bin/view/Main/Badge">l'intranet</a>.
+
 <h1>Infos et liens utiles</h1>
 
 <p><a href="http://atelier-medias.org/porte-status.php">Status (sur le site public)</a></p>
