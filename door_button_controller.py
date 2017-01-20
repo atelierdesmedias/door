@@ -1,23 +1,14 @@
 import door
 import time
 import pifacedigitalio
-import threading 
 
-#
-# Switch to open/close the door
-#
 pfd = pifacedigitalio.PiFaceDigital()
 
-def threadLoop():
-    time.sleep(3)
-    door.close()
-
-def press(event):
-    if not door.is_opened(pfd):
+while True:
+    if pfd.input_pins[4].value == 1:
         door.open("Button")
-        threading.Thread(target=threadLoop).start()
+        time.sleep(3)
+        door.close()
 
-listener = pifacedigitalio.InputEventListener()
-listener.register(4, pifacedigitalio.IODIR_FALLING_EDGE, press)
-listener.activate()
-
+    # Just to be nice with the proc
+    time.sleep(0.1)
