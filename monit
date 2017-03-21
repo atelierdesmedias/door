@@ -6,6 +6,6 @@
 ######################################################
 
 check program door with path /usr/local/door/check.sh
-      start program = "/usr/local/door/start.sh"
-      stop program = "/usr/local/door/stop.sh"
+      start program = "/etc/init.d/door start"
+      stop program = "/etc/init.d/door stop"
       if status != 0 then restart

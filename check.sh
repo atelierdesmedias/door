@@ -11,7 +11,7 @@ function check_script ()
   then
     exit 0
   else
-    echo "Script $2 is dead"
+    echo "Script $1 is dead"
 
     exit 1
   fi
