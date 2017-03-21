@@ -15,3 +15,7 @@ sleep 3
 echo "Close the door"
 python3 close.py
 
+echo "Start monitoring"
+monit monitor door || true
+
+exit 0

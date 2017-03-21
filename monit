@@ -1,0 +1,11 @@
+######################################################
+# 
+# Monit (https://mmonit.com/monit) script to control
+# and restart the door script if needed
+# 
+######################################################
+
+check program door with path /usr/local/door/check.sh
+      start program = "/usr/local/door/start.sh"
+      stop program = "/usr/local/door/stop.sh"
+      if status != 0 then restart
