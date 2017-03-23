@@ -4,7 +4,9 @@ A set of tools to manage a door lock system.
 
 # Requirements
 
-* the target system is the couple Raspberry Py 3 (Raspian) + Pyface
+* the target hardware is the couple Raspberry Py 3 + Pyface
+* ID Card Reader USB 125K HZ (make sure it's one emulating keyboard but most do)
+* Raspian
 * the following packages
 
 ```
