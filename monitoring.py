@@ -18,6 +18,7 @@ def _log(info):
     with open(LOGFILE, 'a') as file: file.write(info + "\n")
     
 def ping(status):
+    '''ping the intranet to tell him we are alive :)'''
     try:
         data = urlencode({'status': status if status else b''}).encode()
         urlopen('http://atelier-medias.org/porte-status.php', data=data, timeout=10)
@@ -25,7 +26,7 @@ def ping(status):
         _log("Error in ping: %r" % e)
 
 def sync():
-    # sync the card numbers. See the www/index.php file in the same git repo as this file.
+    '''sync the card numbers, ie. simply ping www/index.php file in the same git repo, which will query the intranet'''
     try:
         output = urlopen('http://localhost/', data=urlencode({'sync': '1'}).encode(), timeout=10).read().decode()
     except Exception as e:
@@ -34,9 +35,13 @@ def sync():
 
 ping('Started')
 
-
-while (True):
-    sync_status = sync()
+i = 5
+while True:
+    if i == 5:
+        # sync only every 5 minutes, because it's putting too much pressure on the server
+        i = 0
+        sync_status = sync()
+    i += 1
     ping(sync_status)
     time.sleep(60)
 
