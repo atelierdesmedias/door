@@ -16,10 +16,13 @@ for event in device.read_loop():
         if keyevent.keystate == 1:
             code = int(keyevent.scancode)
             if code == 28:
+                success = False
                 if database.containsCard(cardcode):
                    door.open(cardcode)
                    time.sleep(3)
                    door.close()
+                   success = True
+                database.log_card(cardcode, success)
                 cardcode = ''
             elif code == 11:
                 cardcode = cardcode + '0'

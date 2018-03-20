@@ -1,17 +1,14 @@
 import time, os
 import pifacedigitalio
+import database
 
 open_file = open
 #
 # Door control library.
 #
 def _log(info):
-    LOGFILE='/tmp/opened.log'
-    if os.path.exists(LOGFILE) and (os.path.getsize(LOGFILE) > (100 * 1000 * 1000)):
-        os.remove(LOGFILE)
-    with open_file(LOGFILE, 'a') as file:
-        file.write(time.strftime("%Y-%m-%d %H:%M:%S ") + info + "\n")
-    
+    database.log_door_async(info)
+
 def close():
     pifacedigital = pifacedigitalio.PiFaceDigital()
 
