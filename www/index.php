@@ -91,7 +91,7 @@ function delete_card($card)
 	history("DELETING $card");
 
 	$card = mysqli_real_escape_string(db(), $card);
-	$sql_remove = "DELETE FROM card WHERE code = $card";
+	$sql_remove = "DELETE FROM card WHERE code = '$card'";
  	$remove = db()->query($sql_remove);
 }
 
