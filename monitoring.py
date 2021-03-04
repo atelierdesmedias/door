@@ -21,7 +21,7 @@ def ping(status):
     '''ping the intranet to tell him we are alive :)'''
     try:
         data = urlencode({'status': status if status else b''}).encode()
-        urlopen('http://atelier-medias.org/porte-status.php', data=data, timeout=10)
+        urlopen('https://www.atelier-medias.org/porte-status.php', data=data, timeout=10)
     except Exception as e:
         _log("Error in ping: %r" % e)
 
