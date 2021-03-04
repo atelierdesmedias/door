@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Retart MySQL server just in case
+/etc/init.d/mysql restart
+
 #
 # Script called by /etc/init.d
 #
