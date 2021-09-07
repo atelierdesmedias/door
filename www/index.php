@@ -95,23 +95,32 @@ function delete_card($card)
  	$remove = db()->query($sql_remove);
 }
 
-function process_cards($process_coworker, $process_card)
-{
+function get_coworkers_from_intranet() {
 	$json = json_decode(file_get_contents('https://intra.atelier-medias.org/xwiki/bin/get/XWiki/CoworkersService?outputSyntax=plain&code=85aV5wzDDZFJLDQ6'), true);
 	if (count($json["coworkers"]) < 30) {
 	   //paranoid: fail if not enough :) coworkers. This should catch any issue with the intranet.
  	   die("Recu ".count($json["coworkers"])." coworkers de l'intranet, qq chose de pourri !!");
 	}
 	
+	return $json["coworkers"];
+}
+
+function process_cards($process_coworker, $process_card_to_remove)
+{
 	$cards = get_cards();
-	foreach($json["coworkers"] as $coworker)
+	$coworkers = get_coworkers_from_intranet();
+	foreach($coworkers as $coworker)
 	{
-		$process_coworker($cards, $coworker);
-		$cards = array_diff($cards, [$coworker["card"]]);
+	        if (($coworker["formule"] === "nomade") || ($coworker["formule"] === "fixe") || ($coworker["membre_honneur"] == 1)) {
+ 		   $process_coworker($cards, $coworker);
+  		   // enleve de la liste des cartes, ceux utilisee sur l'intranet
+		   $cards = array_diff($cards, [$coworker["card"]]);
+		}
 	}
-	
+
+
 	foreach($cards as $card) {
-		$process_card($card);
+		$process_card_to_remove($card);
 	}
 }
 
@@ -120,7 +129,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST')
 	if(!empty($_POST['sync']))
 	{
 		process_cards(function ($cards, $coworker) {
-				if ($coworker["card"] && (! in_array($coworker["card"], $cards)) && (($coworker["formule"] === "nomade") || ($coworker["formule"] === "fixe") || ($coworker["membre_honneur"] == 1) )) {
+			if ($coworker["card"] && (! in_array($coworker["card"], $cards))) {
 			           add_card($coworker["card"]);
 				}
 			}, function ($card) {
@@ -132,13 +141,29 @@ if($_SERVER['REQUEST_METHOD'] === 'POST')
 }
 elseif (!empty($_GET['missing']))
 {
-	echo "<br/>Liste des coworkers nomades ou fixes dont la carte n'est pas  d&eacute;finie correctement sur l'intranet (carte manquante ou invalide: pas 10 chiffres ou ne commencant pas par 3 zeros)<br/>";
+	echo "<br/>Liste des coworkers nomades ou fixes dont la carte n'est pas d&eacute;finie correctement sur l'intranet<br/>";
 	process_cards(function ($cards, $coworker) {
-		if ((($coworker["formule"] === "nomade") || ($coworker["formule"] === "fixe")) &&
-		   (( !($coworker["card"] && in_array($coworker["card"], $cards))) ||
+	        if ($coworker["membre_honneur"] == 1) {
+		   return;
+		}
+		if (( !($coworker["card"] && in_array($coworker["card"], $cards))) ||
 		    (strlen($coworker["card"]) != 10) ||
-		    (substr($coworker["card"], 0, 3 ) !== "000"))) {
-		     echo "<br/>".$coworker["email"]." - ".$coworker["first_name"]." ".$coworker["last_name"]." - ".$coworker["formule"]." (".($coworker["card"] ? "code invalid  : ".$coworker["card"] : "non d&eacute;fini sur l'intranet").")";
+		    (substr($coworker["card"], 0, 3 ) !== "000")) {
+		     echo "<br/>".$coworker["email"]." - ".$coworker["first_name"]." ".$coworker["last_name"];
+		     if ($coworker["card"]) {
+		       echo " - ".$coworker["card"].": ";
+		       if (in_array($coworker["card"], $cards)) {
+		          echo "code invalide (pas 10 chiffres ou ne commencant pas par 3 zeros)";
+ 		       } else {
+			  echo "m&ecirc;me code utilis&eacute; par plusieurs coworkers dans l'intranet: ";
+			  // pas efficace, mais pas grave, c'est un cas rare...
+ 			  echo implode(", ", array_map(function($c) { return $c["first_name"]." ".$c["last_name"]; },
+			  	   array_filter(get_coworkers_from_intranet(), function($c) use (&$coworker) { return ($c["card"] === $coworker["card"]); })));
+		       }
+ 		     }
+ 	             else {
+		          echo ": non d&eacute;fini dans l'intranet !";
+		     }
 		}
 	}, function ($card) { });
 }
@@ -148,7 +173,7 @@ elseif (!empty($_GET['list']))
 	echo "<br/>";
 	$found = FALSE;
 	process_cards(function ($cards, $coworker) use (&$found) {
-		if ($coworker["card"] && (! in_array($coworker["card"], $cards)) && (($coworker["formule"] === "nomade") || ($coworker["formule"] === "fixe") )) {
+		if ($coworker["card"] && (! in_array($coworker["card"], $cards))) {
 		   echo "<br/>".$coworker["card"]. " (".$coworker["email"]." - ".$coworker["first_name"]." ".$coworker["last_name"]." - ".$coworker["formule"].")";
 		   $found = TRUE;
 		}
@@ -176,8 +201,9 @@ elseif (!empty($_GET['cartes']))
 }
 elseif (!empty($_GET['coworkers']))
 {      
+        echo "Coworker with cards (only nomades, fixes et membres d'honneur): ";
 	process_cards(function ($cards, $coworker) {
-		if ($coworker["card"] && ($coworker["formule"] === "nomade") || ($coworker["formule"] === "fixe") ) {
+		if ($coworker["card"]) {
 		   echo "<br/>".$coworker["card"]. " (".$coworker["email"]." - ".$coworker["first_name"]." ".$coworker["last_name"]." - ".$coworker["formule"].")";
 		}
 	}, function ($card) { });
