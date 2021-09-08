@@ -102,7 +102,10 @@ function get_coworkers_from_intranet() {
  	   die("Recu ".count($json["coworkers"])." coworkers de l'intranet, qq chose de pourri !!");
 	}
 	
-	return $json["coworkers"];
+	return array_filter($json["coworkers"], function($coworker) {
+	     return (($coworker["active"] == 1) // already done on the server, but ya never now
+	     	      && (($coworker["formule"] === "nomade") || ($coworker["formule"] === "fixe") || ($coworker["membre_honneur"] == 1)));
+		     });
 }
 
 function process_cards($process_coworker, $process_card_to_remove)
@@ -111,11 +114,9 @@ function process_cards($process_coworker, $process_card_to_remove)
 	$coworkers = get_coworkers_from_intranet();
 	foreach($coworkers as $coworker)
 	{
-	        if (($coworker["formule"] === "nomade") || ($coworker["formule"] === "fixe") || ($coworker["membre_honneur"] == 1)) {
- 		   $process_coworker($cards, $coworker);
-  		   // enleve de la liste des cartes, ceux utilisee sur l'intranet
-		   $cards = array_diff($cards, [$coworker["card"]]);
-		}
+	   $process_coworker($cards, $coworker);
+	   // enleve de la liste des cartes, ceux utilisee sur l'intranet
+	   $cards = array_diff($cards, [$coworker["card"]]);
 	}
 
 
