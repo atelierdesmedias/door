@@ -13,17 +13,6 @@ function db() {
 	global $link;
 	return $link;
 }
-?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Gestion des cartes</title>
-</head>
-<body>
-
-<?php
 
 function history($action)
 {
@@ -96,10 +85,22 @@ function delete_card($card)
 }
 
 function get_coworkers_from_intranet() {
-	$json = json_decode(file_get_contents('https://intra.atelier-medias.org/xwiki/bin/get/XWiki/CoworkersService?outputSyntax=plain&code=85aV5wzDDZFJLDQ6'), true);
+	$json = json_decode(
+		file_get_contents(
+			'https://intra.atelier-medias.org/xwiki/bin/get/XWiki/CoworkersService?outputSyntax=plain&code=85aV5wzDDZFJLDQ6',
+			// TODO: decide if we allow not having a valid certificate ?
+			false/*,
+			stream_context_create([
+				"ssl" => [
+					"verify_peer"=>false,
+ 					"verify_peer_name"=>false
+				]
+			])
+		*/),
+		true);
 	if (count($json["coworkers"]) < 30) {
 	   //paranoid: fail if not enough :) coworkers. This should catch any issue with the intranet.
- 	   die("Recu ".count($json["coworkers"])." coworkers de l'intranet, qq chose de pourri !!");
+ 	   die("ERREUR: Re&ccedil;u ".count($json["coworkers"])." coworkers de l'intranet, y-a-t-il un probl&egrave;me de connection &agrave; l'intranet ?");
 	}
 	
 	return array_filter($json["coworkers"], function($coworker) {
@@ -124,6 +125,11 @@ function process_cards($process_coworker, $process_card_to_remove)
 		$process_card_to_remove($card);
 	}
 }
+
+
+?>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Gestion des cartes</title></head><body>
+<?php
 
 if($_SERVER['REQUEST_METHOD'] === 'POST')
 {
@@ -240,5 +246,4 @@ Pour activer votre carte (ou badge), voir les instructions sur <a href="https://
 <?php
 }
 ?>
-</body>
-</html>
+</body></html>

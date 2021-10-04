@@ -26,12 +26,14 @@ def ping(status):
         _log("Error in ping: %r" % e)
 
 def sync():
-    '''sync the card numbers, ie. simply ping www/index.php file in the same git repo, which will query the intranet'''
+    '''Sync the card numbers, ie. simply ping www/index.php file in the same git repo, which will query the intranet
+
+    Returns: None if successful, error information otherwise.'''
     try:
         output = urlopen('http://localhost/', data=urlencode({'sync': '1'}).encode(), timeout=10).read().decode()
     except Exception as e:
         return ("Error in sync: %r" % e)
-    return None if ('<b>OK</b>' in output) else "Sync failed: 'OK' not found in output of POST to http://localhost/ (aka http://porte/)"
+    return None if ('<b>OK</b>' in output) else ("POST to http://porte.local failed: " + (output if output else "no data returned"))
 
 ping('Started')
 
@@ -42,7 +44,7 @@ while True:
         i = 0
         sync_status = sync()
     i += 1
-    ping(sync_status)
+    ping(("ERROR: " + sync_status) if sync_status else '')
     time.sleep(60)
 
 
@@ -62,10 +64,12 @@ $marker = '/tmp/mark.txt';
 $log = '/tmp/porte-status.txt';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-   file_put_contents($marker, "placeholder file for http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
    if(!empty($_POST['status'])) {
       if (filesize($log) > (100*1000*1000)) { unlink($log); } // avoid filling tmp folder - limit to 100MBytes
       file_put_contents($log, date(DATE_RFC2822).": ".$_POST['status']."\n", FILE_APPEND);
+   }
+   else {
+      file_put_contents($marker, "placeholder file for http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
    }
    exit("OK\n");
 }

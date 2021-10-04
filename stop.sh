@@ -1,9 +1,10 @@
 #
 # Script called by /etc/init.d (only for 'init.d restart')
 #
-kill $(ps auwwx | grep 'door_button_controller.py' | awk '{print $2}')
-kill $(ps auwwx | grep 'card_controler.py' | awk '{print $2}')
-kill $(ps auwwx | grep 'monitoring.py' | awk '{print $2}')
+echo 'Stopping...'
+pkill -f 'python3 door_button_controller.py'
+pkill -f 'python3 card_controler.py'
+pkill -f 'python3 monitoring.py'
 python3 /usr/local/door/open.py
 
 exit 0
