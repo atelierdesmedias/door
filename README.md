@@ -7,10 +7,16 @@ A set of tools to manage a door lock system.
 * the target hardware is the couple Raspberry Py 3 + Pyface
 * ID Card Reader USB 125K HZ (make sure it's one emulating keyboard but most do)
 * Raspian
-* the following packages
+* the following Debian packages
 
 ```
-sudo apt-get install python3 python3-pip python3-setuptools python3-pifacedigitalio python3-mysql.connector monit
+sudo apt-get install python3 python3-pip python3-setuptools python3-mysql.connector python3-evdev monit
+```
+
+* the following Python3 packages
+
+```
+sudo pip3 install pifacedigitalio pifacecommon
 ```
 
 # Install
