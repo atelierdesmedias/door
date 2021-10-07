@@ -10,7 +10,7 @@ A set of tools to manage a door lock system.
 * the following Debian packages
 
 ```
-sudo apt-get install python3 python3-pip python3-setuptools python3-mysql.connector python3-evdev monit
+sudo apt-get install python3 python3-pip python3-setuptools python3-mysql.connector python3-evdev monit mariadb-server
 ```
 
 * the following Python3 packages
