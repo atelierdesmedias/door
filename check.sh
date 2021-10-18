@@ -11,6 +11,8 @@ then
     echo "MySQL is dead"
 
     exit 1
+else
+    echo "MySQL OK"
 fi
 
 # Check door scripts
