@@ -1,8 +1,11 @@
 <?php
-$servername = "localhost";
-$username = "door";
-$password = "door";
-$dbname = "door";
+$configuration = parse_ini_file("/usr/local/door/www/configuration.ini");
+
+$servername = $configuration['servername'];
+$username = $configuration['username'];
+$password = $configuration['password'];
+$dbname = $configuration['dbname'];
+$code = $configuration['code'];
 
 $link = new mysqli($servername, $username, $password, $dbname);
 if ($link === false) {
@@ -85,9 +88,11 @@ function delete_card($card)
 }
 
 function get_coworkers_from_intranet() {
+	global $code;
+
 	$json = json_decode(
 		file_get_contents(
-			'https://intra.atelier-medias.org/xwiki/bin/get/XWiki/CoworkersService?outputSyntax=plain&code=85aV5wzDDZFJLDQ6',
+			"https://intra.atelier-medias.org/xwiki/bin/get/XWiki/CoworkersService?outputSyntax=plain&code=$code",
 			// TODO: decide if we allow not having a valid certificate ?
 			false/*,
 			stream_context_create([
