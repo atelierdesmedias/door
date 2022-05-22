@@ -5,10 +5,9 @@ import time
 import os
 
 #
-# Monitoring and card number sync
+# Monitoring
 #
 # Simply POST to http://atelier-medias.org/porte-status.php every minute. See that URL for status.
-# Also sync the card numbers from the intranet by POSTING to http://localhost/ (see www.index.php)
 #
 
 def _log(info):
@@ -37,13 +36,7 @@ def sync():
 
 ping('Started')
 
-i = 5
 while True:
-    if i == 5:
-        # sync only every 5 minutes, because it's putting too much pressure on the server
-        i = 0
-        sync_status = sync()
-    i += 1
     ping(("ERROR: " + sync_status) if sync_status else '')
     time.sleep(60)
 
