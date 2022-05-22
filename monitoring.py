@@ -37,7 +37,7 @@ def sync():
 ping('Started')
 
 while True:
-    ping(("ERROR: " + sync_status) if sync_status else '')
+    ping('')
     time.sleep(60)
 
 
