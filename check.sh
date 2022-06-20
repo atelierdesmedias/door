@@ -32,6 +32,5 @@ function check_script ()
 
 check_script "door_button_controller.py"
 check_script "card_controler.py"
-check_script "monitoring.py"
 
 exit 0
