@@ -6,6 +6,7 @@ $username = $configuration['username'];
 $password = $configuration['password'];
 $dbname = $configuration['dbname'];
 $code = $configuration['code'];
+$extracodes = $configuration['extracodes'];
 
 $link = new mysqli($servername, $username, $password, $dbname);
 if ($link === false) {
@@ -35,6 +36,12 @@ function get_cards() {
  			   $cards[] = $row["code"];
 		}
 	}
+
+	// Add extra cards
+	foreach($extracodes as $extracode) {
+		$cards[] = $extracode;
+	}
+
 	return $cards;
 }
 
