@@ -6,7 +6,7 @@ $username = $configuration['username'];
 $password = $configuration['password'];
 $dbname = $configuration['dbname'];
 $code = $configuration['code'];
-$extracodes = $configuration['extracodes'];
+$extracards = $configuration['extracards'];
 
 $link = new mysqli($servername, $username, $password, $dbname);
 if ($link === false) {
@@ -35,11 +35,6 @@ function get_cards() {
 	 	while($row = $result->fetch_assoc()){
  			   $cards[] = $row["code"];
 		}
-	}
-
-	// Add extra cards
-	foreach($extracodes as $extracode) {
-		$cards[] = $extracode;
 	}
 
 	return $cards;
@@ -96,6 +91,7 @@ function delete_card($card)
 
 function get_coworkers_from_intranet() {
 	global $code;
+	global $extracards;
 
 	$json = json_decode(
 		file_get_contents(
@@ -114,11 +110,18 @@ function get_coworkers_from_intranet() {
 	   //paranoid: fail if not enough :) coworkers. This should catch any issue with the intranet.
  	   die("ERREUR: Re&ccedil;u ".count($json["coworkers"])." coworkers de l'intranet, y-a-t-il un probl&egrave;me de connection &agrave; l'intranet ?");
 	}
-	
-	return array_filter($json["coworkers"], function($coworker) {
+
+	$coworkers = array_filter($json["coworkers"], function($coworker) {
 	     return (($coworker["active"] == 1) // already done on the server, but ya never now
 	     	      && (($coworker["formule"] === "nomade") || ($coworker["formule"] === "fixe") || ($coworker["membre_honneur"] == 1)));
 		     });
+
+	// Add extra cards
+	foreach($extracards as $extracard) {
+		$coworkers[] = array('card' => $extracard);
+	}
+
+	return $coworkers;
 }
 
 function process_cards($process_coworker, $process_card_to_remove)
