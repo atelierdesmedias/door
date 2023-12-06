@@ -240,8 +240,6 @@ Pour activer votre carte (ou badge), voir les instructions sur <a href="https://
 
 <h1>Infos et liens utiles</h1>
 
-<p><a href="http://atelier-medias.org/porte-status.php">Status (sur le site public)</a></p>
-
 <p>
 <a href="?list=1">Liste des cartes &agrave; syncer</a>
 <form action="" method="post">
